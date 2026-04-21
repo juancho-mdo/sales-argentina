@@ -347,6 +347,9 @@ def process_data(owners, raw_q2, raw_new):
         if owner in EXCLUDED_VENDORS:
             continue
         sid = p.get("dealstage", "")
+        # Excluir Nurturing y Closed Lost del dashboard (no son negocios activos)
+        if sid in (NURTURING, CLOSED_LOST):
+            continue
         cd  = ms_to_date(p.get("createdate"))
         src = p.get("origen") or ""
         # Display name: unify the 3 VERBAL_WIN stages

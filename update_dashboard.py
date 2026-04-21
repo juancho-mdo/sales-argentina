@@ -22,24 +22,28 @@ PIPELINE_ID = "39845777"  # ARG Sales
 STAGE_NAMES = {
     "85823385":   "Discovery",
     "85823386":   "Qualified",
-    "114785579":  "Propuesta Comercial",
-    "1296021092": "Negotiation",
-    "1143816512": "Verbal Win / Envío de esqueleto",
-    "114788456":  "Internal Validation",
-    "127957058":  "Contrato enviado para firma",
-    "85823390":   "Close Won",
-    "85823391":   "Closed Lost",
-    "114783619":  "Nurturing",
+    "1296021092": "Propuesta Comercial",
+    "114785579":  "Negotiation",
+    "114788456":  "Verbal Win / Envío de esqueleto",
+    "127957058":  "Internal Validation",
+    "114783619":  "Contrato enviado para firma",
+    "85823390":   "Closed Won",
+    "85823391":   "Opportunity Lost",
+    "145752093":  "Churn",
+    "1143816512": "Nurturing",
 }
 
-NURTURING   = "114783619"
+# Stages excluidas del dashboard (no son negocios activos)
+NURTURING   = "1143816512"
 CLOSED_LOST = "85823391"
+CHURN       = "145752093"
+
 # Unificadas como "Verbal Win" en el dashboard:
 #   - Verbal Win / Envío de esqueleto de contrato
 #   - Internal Validation
 #   - Contrato enviado para firma
-VERBAL_WIN      = {"1143816512", "114788456", "127957058"}
-PIPELINE_STAGES = {"85823385", "85823386", "114785579", "1296021092"}  # Discovery, Qualified, Propuesta, Negotiation
+VERBAL_WIN      = {"114788456", "127957058", "114783619"}
+PIPELINE_STAGES = {"85823385", "85823386", "1296021092", "114785579"}  # Discovery, Qualified, Propuesta, Negotiation
 CLOSE_WON       = "85823390"
 
 # Vendedores activos en ARG Sales (objetivo individual: $6,000 USD)
@@ -273,7 +277,8 @@ def process_data(owners, raw_q2, raw_new):
             continue
         p    = d.get("properties", {})
         sid  = p.get("dealstage", "")
-        if sid in (NURTURING, CLOSED_LOST):
+        # Excluir Nurturing, Closed Lost y Churn (no son negocios activos)
+        if sid in (NURTURING, CLOSED_LOST, CHURN):
             continue
         amt     = float(p.get("amount") or 0)
         # Skip Close Won deals with $0 — administrative/duplicate entries
@@ -347,8 +352,8 @@ def process_data(owners, raw_q2, raw_new):
         if owner in EXCLUDED_VENDORS:
             continue
         sid = p.get("dealstage", "")
-        # Excluir Nurturing y Closed Lost del dashboard (no son negocios activos)
-        if sid in (NURTURING, CLOSED_LOST):
+        # Excluir Nurturing, Closed Lost y Churn (no son negocios activos)
+        if sid in (NURTURING, CLOSED_LOST, CHURN):
             continue
         cd  = ms_to_date(p.get("createdate"))
         src = p.get("origen") or ""

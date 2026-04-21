@@ -1,4 +1,4 @@
-yamlname: Update ARG Dashboard
+name: Update ARG Dashboard
 
 on:
   # Runs every day at 8:00 AM Argentina time (= 11:00 UTC, UTC-3)
